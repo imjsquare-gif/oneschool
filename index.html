@@ -1,0 +1,732 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>oneSchool+ | Singapore's Complete School Finder</title>
+<style>
+  :root {
+    --primary: #1a56db;
+    --primary-light: #e8effc;
+    --primary-dark: #0f3a8e;
+    --accent: #f59e0b;
+    --accent-light: #fef3c7;
+    --green: #15803d;
+    --green-bg: #dcfce7;
+    --yellow: #ca8a04;
+    --yellow-bg: #fef9c3;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--gray-50); color: var(--gray-800); line-height: 1.5; }
+
+  /* === NAV RADIO SYSTEM === */
+  input[name="nav"], input[name="level"], input[name="compare-tab"], input[name="safety-tab"] { display: none; }
+
+  /* === HEADER === */
+  .header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, #2563eb 100%);
+    color: white;
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 40px; height: 40px; background: var(--accent); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;
+    color: var(--primary-dark); position: relative;
+  }
+  .logo-icon::after { content: '+'; position: absolute; top: -4px; right: -6px; font-size: 16px; color: var(--accent); background: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+  .logo-text { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo-text span { color: var(--accent); }
+  .logo-sub { font-size: 11px; opacity: 0.8; letter-spacing: 0.5px; }
+
+  .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav-links label {
+    padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500;
+    transition: all 0.15s ease; color: rgba(255,255,255,0.8); white-space: nowrap;
+  }
+  .nav-links label:hover { background: rgba(255,255,255,0.15); color: white; }
+
+  #nav-home:checked ~ .header .nav-links label[for="nav-home"],
+  #nav-search:checked ~ .header .nav-links label[for="nav-search"],
+  #nav-schools:checked ~ .header .nav-links label[for="nav-schools"],
+  #nav-compare:checked ~ .header .nav-links label[for="nav-compare"],
+  #nav-safety:checked ~ .header .nav-links label[for="nav-safety"],
+  #nav-pathway:checked ~ .header .nav-links label[for="nav-pathway"] {
+    background: rgba(255,255,255,0.2); color: white;
+  }
+
+  /* === PAGES === */
+  .page { display: none; max-width: 1200px; margin: 0 auto; padding: 24px; }
+  #nav-home:checked ~ .page-home,
+  #nav-search:checked ~ .page-search,
+  #nav-schools:checked ~ .page-schools,
+  #nav-compare:checked ~ .page-compare,
+  #nav-safety:checked ~ .page-safety,
+  #nav-pathway:checked ~ .page-pathway { display: block; }
+
+  /* === HOME PAGE === */
+  .hero {
+    text-align: center; padding: 48px 24px;
+    background: linear-gradient(135deg, var(--primary-light) 0%, #dbeafe 50%, #ede9fe 100%);
+    border-radius: var(--radius); margin-bottom: 32px;
+  }
+  .hero h1 { font-size: 36px; font-weight: 800; color: var(--gray-900); margin-bottom: 8px; letter-spacing: -1px; }
+  .hero h1 span { color: var(--primary); }
+  .hero p { font-size: 16px; color: var(--gray-600); max-width: 500px; margin: 0 auto 24px; }
+  .hero-tagline { font-size: 14px; color: var(--primary); font-weight: 600; margin-bottom: 16px; letter-spacing: 1px; text-transform: uppercase; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }
+  .stat-card {
+    background: white; border-radius: var(--radius); padding: 20px; text-align: center;
+    border: 1px solid var(--gray-200); box-shadow: var(--shadow);
+  }
+  .stat-icon { font-size: 28px; margin-bottom: 8px; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--primary); font-family: 'SF Mono', 'Cascadia Code', monospace; }
+  .stat-label { font-size: 12px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+  .level-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }
+  .level-card {
+    background: white; border-radius: var(--radius); padding: 24px 16px; text-align: center;
+    border: 1px solid var(--gray-200); box-shadow: var(--shadow); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .level-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+  .level-card .icon { font-size: 36px; margin-bottom: 12px; }
+  .level-card h3 { font-size: 15px; font-weight: 600; color: var(--gray-800); margin-bottom: 4px; }
+  .level-card .age { font-size: 12px; color: var(--gray-500); margin-bottom: 8px; }
+  .level-card .count { font-size: 12px; color: var(--primary); font-weight: 600; }
+
+  /* === SEARCH PAGE === */
+  .search-container { display: grid; grid-template-columns: 300px 1fr; gap: 24px; }
+  .filters-panel {
+    background: white; border-radius: var(--radius); padding: 24px; border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow); height: fit-content; position: sticky; top: 90px;
+  }
+  .filters-panel h3 { font-size: 16px; font-weight: 700; color: var(--gray-800); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .filter-group { margin-bottom: 16px; }
+  .filter-group label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .filter-group select, .filter-group input[type="text"] {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm);
+    font-size: 14px; color: var(--gray-700); background: white; appearance: auto;
+  }
+  .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+
+  .level-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+  .level-tabs label {
+    padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--gray-300); color: var(--gray-600); transition: all 0.15s ease; white-space: nowrap;
+  }
+  .level-tabs label:hover { border-color: var(--primary); color: var(--primary); }
+
+  #level-pre:checked ~ .page-search .level-tabs label[for="level-pre"],
+  #level-pri:checked ~ .page-search .level-tabs label[for="level-pri"],
+  #level-sec:checked ~ .page-search .level-tabs label[for="level-sec"],
+  #level-post:checked ~ .page-search .level-tabs label[for="level-post"],
+  #level-uni:checked ~ .page-search .level-tabs label[for="level-uni"] {
+    background: var(--primary); color: white; border-color: var(--primary);
+  }
+
+  .results-panel h3 { font-size: 16px; font-weight: 700; color: var(--gray-800); margin-bottom: 16px; }
+
+  .school-card {
+    background: white; border-radius: var(--radius); padding: 20px; margin-bottom: 12px;
+    border: 1px solid var(--gray-200); box-shadow: var(--shadow); transition: all 0.15s ease;
+  }
+  .school-card:hover { box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+  .school-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .school-name { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+  .school-level-badge {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 12px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .badge-pre { background: #fce7f3; color: #be185d; }
+  .badge-pri { background: #dbeafe; color: #1d4ed8; }
+  .badge-sec { background: #dcfce7; color: #15803d; }
+  .badge-post { background: #fef3c7; color: #b45309; }
+  .badge-uni { background: #ede9fe; color: #6d28d9; }
+
+  .school-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--gray-500); margin-bottom: 8px; }
+  .school-meta span { display: flex; align-items: center; gap: 4px; }
+  .school-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 500;
+    background: var(--gray-100); color: var(--gray-600);
+  }
+  .tag-ip { background: #ede9fe; color: #6d28d9; }
+  .tag-sap { background: #fce7f3; color: #be185d; }
+  .tag-alp { background: #dbeafe; color: #1d4ed8; }
+  .tag-llp { background: #dcfce7; color: #15803d; }
+
+  .safety-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+  .safety-green { background: var(--green-bg); color: var(--green); }
+  .safety-yellow { background: var(--yellow-bg); color: var(--yellow); }
+  .safety-red { background: var(--red-bg); color: var(--red); }
+
+  /* === ALL SCHOOLS TABLE === */
+  .table-wrapper { background: white; border-radius: var(--radius); border: 1px solid var(--gray-200); box-shadow: var(--shadow); overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--gray-500); font-weight: 600; padding: 12px 16px; border-bottom: 2px solid var(--gray-200); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+  td { padding: 12px 16px; color: var(--gray-700); border-bottom: 1px solid var(--gray-100); }
+  tr:hover td { background: var(--gray-50); }
+  .table-title { padding: 20px 16px 12px; font-size: 18px; font-weight: 700; color: var(--gray-800); }
+
+  /* === COMPARE PAGE === */
+  .compare-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+  .compare-card {
+    background: white; border-radius: var(--radius); border: 2px solid var(--gray-200);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .compare-card-head { padding: 20px; background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%); color: white; text-align: center; }
+  .compare-card-head h3 { font-size: 16px; font-weight: 700; }
+  .compare-card-head .sub { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+  .compare-row { padding: 12px 16px; border-bottom: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: center; }
+  .compare-row:nth-child(even) { background: var(--gray-50); }
+  .compare-label { font-size: 12px; color: var(--gray-500); font-weight: 500; }
+  .compare-value { font-size: 14px; font-weight: 600; color: var(--gray-800); text-align: right; }
+
+  .compare-tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+  .compare-tabs label {
+    padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--gray-300); color: var(--gray-600); transition: all 0.15s ease;
+  }
+  .compare-tabs label:hover { border-color: var(--primary); color: var(--primary); }
+
+  #ct-sec:checked ~ .page-compare .compare-tabs label[for="ct-sec"],
+  #ct-jc:checked ~ .page-compare .compare-tabs label[for="ct-jc"],
+  #ct-uni:checked ~ .page-compare .compare-tabs label[for="ct-uni"] {
+    background: var(--primary); color: white; border-color: var(--primary);
+  }
+
+  .compare-section { display: none; }
+  #ct-sec:checked ~ .page-compare .compare-sec,
+  #ct-jc:checked ~ .page-compare .compare-jc,
+  #ct-uni:checked ~ .page-compare .compare-uni { display: block; }
+
+  /* === SAFETY PAGE === */
+  .safety-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .safety-stat {
+    background: white; border-radius: var(--radius); padding: 20px; text-align: center;
+    border: 1px solid var(--gray-200); box-shadow: var(--shadow);
+  }
+  .safety-stat .num { font-size: 32px; font-weight: 700; font-family: 'SF Mono', monospace; }
+  .safety-stat .lbl { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+  .safety-stat.green .num { color: var(--green); }
+  .safety-stat.yellow .num { color: var(--yellow); }
+  .safety-stat.red .num { color: var(--red); }
+  .safety-stat.total .num { color: var(--primary); }
+
+  .incident-card {
+    background: white; border-radius: var(--radius); padding: 16px 20px; margin-bottom: 12px;
+    border: 1px solid var(--gray-200); box-shadow: var(--shadow);
+    border-left: 4px solid var(--gray-300);
+  }
+  .incident-card.high { border-left-color: var(--red); }
+  .incident-card.medium { border-left-color: var(--yellow); }
+  .incident-card.low { border-left-color: var(--green); }
+  .incident-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .incident-school { font-size: 15px; font-weight: 700; color: var(--gray-800); }
+  .incident-severity { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; text-transform: uppercase; }
+  .sev-high { background: var(--red-bg); color: var(--red); }
+  .sev-medium { background: var(--yellow-bg); color: var(--yellow); }
+  .sev-low { background: var(--green-bg); color: var(--green); }
+  .incident-details { font-size: 13px; color: var(--gray-600); margin-bottom: 4px; }
+  .incident-meta { font-size: 12px; color: var(--gray-400); }
+
+  /* === PATHWAY PAGE === */
+  .pathway-container { max-width: 900px; margin: 0 auto; }
+  .pathway-flow { display: flex; flex-direction: column; gap: 0; position: relative; }
+  .pathway-step {
+    display: flex; gap: 20px; align-items: flex-start; position: relative; padding-bottom: 24px;
+  }
+  .pathway-step::before {
+    content: ''; position: absolute; left: 24px; top: 50px; bottom: 0;
+    width: 2px; background: var(--gray-300);
+  }
+  .pathway-step:last-child::before { display: none; }
+  .pathway-dot {
+    width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0; z-index: 1;
+  }
+  .pathway-content {
+    background: white; border-radius: var(--radius); padding: 20px; flex: 1;
+    border: 1px solid var(--gray-200); box-shadow: var(--shadow);
+  }
+  .pathway-content h3 { font-size: 16px; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
+  .pathway-content .age-range { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 8px; }
+  .pathway-content p { font-size: 13px; color: var(--gray-600); }
+  .pathway-content .schools-list { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .dot-pre { background: #fce7f3; }
+  .dot-pri { background: #dbeafe; }
+  .dot-sec { background: #dcfce7; }
+  .dot-post { background: #fef3c7; }
+  .dot-uni { background: #ede9fe; }
+
+  .pathway-scenario {
+    background: white; border-radius: var(--radius); padding: 24px; margin-top: 24px;
+    border: 2px solid var(--primary-light); box-shadow: var(--shadow);
+  }
+  .pathway-scenario h3 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+
+  /* === SECTION HEADERS === */
+  .section-header { margin-bottom: 20px; }
+  .section-header h2 { font-size: 22px; font-weight: 800; color: var(--gray-900); letter-spacing: -0.5px; }
+  .section-header p { font-size: 14px; color: var(--gray-500); margin-top: 4px; }
+
+  /* === FOOTER === */
+  .footer { text-align: center; padding: 32px 24px; color: var(--gray-400); font-size: 12px; border-top: 1px solid var(--gray-200); margin-top: 48px; }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 900px) {
+    .stats-row, .level-cards { grid-template-columns: repeat(3, 1fr); }
+    .search-container { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .safety-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .stats-row, .level-cards { grid-template-columns: repeat(2, 1fr); }
+    .header-inner { flex-direction: column; align-items: flex-start; }
+    .nav-links { width: 100%; overflow-x: auto; }
+  }
+
+  /* === ANIMATIONS === */
+  @media (prefers-reduced-motion: no-preference) {
+    .school-card, .stat-card, .level-card, .compare-card, .safety-stat, .incident-card, .pathway-step {
+      animation: fadeUp 0.4s ease-out both;
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .school-card:nth-child(2), .stat-card:nth-child(2), .level-card:nth-child(2) { animation-delay: 50ms; }
+    .school-card:nth-child(3), .stat-card:nth-child(3), .level-card:nth-child(3) { animation-delay: 100ms; }
+    .school-card:nth-child(4), .stat-card:nth-child(4), .level-card:nth-child(4) { animation-delay: 150ms; }
+    .school-card:nth-child(5), .stat-card:nth-child(5), .level-card:nth-child(5) { animation-delay: 200ms; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV RADIOS -->
+<input type="radio" name="nav" id="nav-home" checked>
+<input type="radio" name="nav" id="nav-search">
+<input type="radio" name="nav" id="nav-schools">
+<input type="radio" name="nav" id="nav-compare">
+<input type="radio" name="nav" id="nav-safety">
+<input type="radio" name="nav" id="nav-pathway">
+
+<!-- LEVEL RADIOS -->
+<input type="radio" name="level" id="level-pre">
+<input type="radio" name="level" id="level-pri">
+<input type="radio" name="level" id="level-sec" checked>
+<input type="radio" name="level" id="level-post">
+<input type="radio" name="level" id="level-uni">
+
+<!-- COMPARE TABS -->
+<input type="radio" name="compare-tab" id="ct-sec" checked>
+<input type="radio" name="compare-tab" id="ct-jc">
+<input type="radio" name="compare-tab" id="ct-uni">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">1S</div>
+      <div>
+        <div class="logo-text">oneSchool<span>+</span></div>
+        <div class="logo-sub">Every School. One Search. Your Future.</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <label for="nav-home">🏠 Home</label>
+      <label for="nav-search">🔍 Search</label>
+      <label for="nav-schools">📋 All Schools</label>
+      <label for="nav-compare">📊 Compare</label>
+      <label for="nav-safety">🛡️ Safety</label>
+      <label for="nav-pathway">🗺️ Pathway</label>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== HOME PAGE ==================== -->
+<div class="page page-home">
+  <div class="hero">
+    <div class="hero-tagline">Singapore's Complete Education Platform</div>
+    <h1>Welcome to <span>oneSchool+</span></h1>
+    <p>Find, compare, and explore every school in Singapore — from pre-school to university — all in one place.</p>
+    <label for="nav-search" style="display:inline-block;padding:12px 32px;background:var(--primary);color:white;border-radius:8px;font-weight:600;cursor:pointer;font-size:15px;transition:all 0.15s ease;">🔍 Start Searching</label>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-icon">🧒</div><div class="stat-num">1,800+</div><div class="stat-label">Pre-Schools</div></div>
+    <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-num">186</div><div class="stat-label">Primary Schools</div></div>
+    <div class="stat-card"><div class="stat-icon">🏫</div><div class="stat-num">139</div><div class="stat-label">Secondary Schools</div></div>
+    <div class="stat-card"><div class="stat-icon">🎓</div><div class="stat-num">33</div><div class="stat-label">Post-Secondary</div></div>
+    <div class="stat-card"><div class="stat-icon">🎓</div><div class="stat-num">6</div><div class="stat-label">Universities</div></div>
+  </div>
+
+  <div class="section-header"><h2>Explore by Education Level</h2><p>Click a level to start searching</p></div>
+  <div class="level-cards">
+    <label for="nav-search" class="level-card" style="text-decoration:none;">
+      <div class="icon">🧒</div>
+      <h3>Pre-School</h3>
+      <div class="age">Ages 2–6</div>
+      <div class="count">Kindergartens &amp; Childcare</div>
+    </label>
+    <label for="nav-search" class="level-card">
+      <div class="icon">📚</div>
+      <h3>Primary School</h3>
+      <div class="age">Ages 7–12</div>
+      <div class="count">P1 Registration &amp; GEP</div>
+    </label>
+    <label for="nav-search" class="level-card">
+      <div class="icon">🏫</div>
+      <h3>Secondary School</h3>
+      <div class="age">Ages 13–16</div>
+      <div class="count">PSLE AL &amp; DSA</div>
+    </label>
+    <label for="nav-search" class="level-card">
+      <div class="icon">🎒</div>
+      <h3>Post-Secondary</h3>
+      <div class="age">Ages 17–19</div>
+      <div class="count">JC, Poly &amp; ITE</div>
+    </label>
+    <label for="nav-search" class="level-card">
+      <div class="icon">🎓</div>
+      <h3>University</h3>
+      <div class="age">Ages 19+</div>
+      <div class="count">6 Autonomous Universities</div>
+    </label>
+  </div>
+</div>
+
+<!-- ==================== SEARCH PAGE ==================== -->
+<div class="page page-search">
+  <div class="section-header"><h2>🔍 Find Your School</h2><p>Filter by education level, location, and preferences</p></div>
+
+  <div class="level-tabs">
+    <label for="level-pre">🧒 Pre-School</label>
+    <label for="level-pri">📚 Primary</label>
+    <label for="level-sec">🏫 Secondary</label>
+    <label for="level-post">🎒 Post-Secondary</label>
+    <label for="level-uni">🎓 University</label>
+  </div>
+
+  <div class="search-container">
+    <div class="filters-panel">
+      <h3>⚙️ Filters</h3>
+      <div class="filter-group">
+        <label>Your Location</label>
+        <select>
+          <option>Ang Mo Kio</option><option>Bedok</option><option selected>Bishan</option>
+          <option>Bukit Batok</option><option>Clementi</option><option>Hougang</option>
+          <option>Jurong West</option><option>Pasir Ris</option><option>Punggol</option>
+          <option>Queenstown</option><option>Sengkang</option><option>Tampines</option>
+          <option>Toa Payoh</option><option>Woodlands</option><option>Yishun</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Max Distance</label>
+        <select>
+          <option>2 km</option><option selected>5 km</option><option>8 km</option><option>10 km</option><option>15 km (Island-wide)</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>PSLE AL Score</label>
+        <select>
+          <option>AL 4 (Top)</option><option>AL 6</option><option>AL 8</option><option selected>AL 10</option>
+          <option>AL 12</option><option>AL 14</option><option>AL 16</option><option>AL 18</option>
+          <option>AL 20</option><option>AL 22</option><option>AL 24</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Gender</label>
+        <select><option selected>Any</option><option>Co-ed</option><option>Boys</option><option>Girls</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Programme</label>
+        <select><option selected>All Programmes</option><option>🎓 IP</option><option>🈶 SAP</option><option>🔬 ALP</option><option>🌱 LLP</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Safety Preference</label>
+        <select><option>Show All</option><option selected>🛡️ Exclude incidents</option></select>
+      </div>
+    </div>
+
+    <div class="results-panel">
+      <h3>✅ 3 Schools Found — Bishan | AL 10 | 5km</h3>
+
+      <div class="school-card">
+        <div class="school-card-header">
+          <div class="school-name">🏫 Ang Mo Kio Secondary School</div>
+          <span class="school-level-badge badge-sec">Secondary</span>
+        </div>
+        <div class="school-meta">
+          <span>📍 Ang Mo Kio · 2.16 km</span>
+          <span>🏛️ Government · Co-ed</span>
+          <span>📊 G3 COP: AL 14</span>
+        </div>
+        <div class="school-tags">
+          <span class="tag tag-alp">🔬 ALP: STEM - Sustainable Living</span>
+          <span class="tag tag-llp">🌱 LLP: Community Youth Leadership</span>
+          <span class="tag">🏅 Sports</span>
+          <span class="tag">🏆 Football — Silver</span>
+        </div>
+        <div style="margin-top:10px;"><span class="safety-badge safety-green">🟢 No reported incidents</span></div>
+      </div>
+
+      <div class="school-card">
+        <div class="school-card-header">
+          <div class="school-name">🏫 Pei Hwa Secondary School</div>
+          <span class="school-level-badge badge-sec">Secondary</span>
+        </div>
+        <div class="school-meta">
+          <span>📍 Novena · 3.44 km</span>
+          <span>🏛️ Govt-Aided · Co-ed</span>
+          <span>📊 G3 COP: AL 14</span>
+        </div>
+        <div class="school-tags">
+          <span class="tag tag-alp">🔬 ALP: Humanities - Journalism</span>
+        </div>
+        <div style="margin-top:10px;"><span class="safety-badge safety-green">🟢 No reported incidents</span></div>
+      </div>
+
+      <div class="school-card">
+        <div class="school-card-header">
+          <div class="school-name">🏫 Hougang Secondary School</div>
+          <span class="school-level-badge badge-sec">Secondary</span>
+        </div>
+        <div class="school-meta">
+          <span>📍 Hougang · 4.58 km</span>
+          <span>🏛️ Government · Co-ed</span>
+          <span>📊 G3 COP: AL 15</span>
+        </div>
+        <div class="school-tags">
+          <span class="tag tag-alp">🔬 ALP: STEM - Electronics</span>
+          <span class="tag tag-llp">🌱 LLP: Music & Performing Arts</span>
+          <span class="tag">🎭 Arts</span>
+          <span class="tag">🏆 Concert Band — Distinction</span>
+        </div>
+        <div style="margin-top:10px;"><span class="safety-badge safety-green">🟢 No reported incidents</span></div>
+      </div>
+
+      <!-- Pre-School Results -->
+      <div style="margin-top:24px; padding-top:24px; border-top: 2px dashed var(--gray-200);">
+        <h3 style="color:var(--gray-500); font-size:14px; margin-bottom:12px;">📌 Sample results from other levels near Bishan</h3>
+
+        <div class="school-card">
+          <div class="school-card-header">
+            <div class="school-name">🧒 MOE Kindergarten @ Marymount</div>
+            <span class="school-level-badge badge-pre">Pre-School</span>
+          </div>
+          <div class="school-meta">
+            <span>📍 Bishan · 1.2 km</span>
+            <span>🏛️ MOE Kindergarten</span>
+            <span>💰 $160/month</span>
+          </div>
+          <div class="school-tags">
+            <span class="tag">⭐ SPARK Certified</span>
+            <span class="tag">🕐 7am–5pm</span>
+            <span class="tag">📋 K1–K2</span>
+          </div>
+        </div>
+
+        <div class="school-card">
+          <div class="school-card-header">
+            <div class="school-name">📚 Catholic High School (Primary)</div>
+            <span class="school-level-badge badge-pri">Primary</span>
+          </div>
+          <div class="school-meta">
+            <span>📍 Bishan · 0.8 km</span>
+            <span>🏛️ Govt-Aided · Boys</span>
+            <span>🎯 Affiliated to Catholic High (Sec)</span>
+          </div>
+          <div class="school-tags">
+            <span class="tag tag-sap">🈶 SAP School</span>
+            <span class="tag">🧒 GEP Available</span>
+            <span class="tag">📋 Phase 2A Priority</span>
+          </div>
+        </div>
+
+        <div class="school-card">
+          <div class="school-card-header">
+            <div class="school-name">🎒 Hwa Chong Institution (JC)</div>
+            <span class="school-level-badge badge-post">JC</span>
+          </div>
+          <div class="school-meta">
+            <span>📍 Bukit Timah · 4.5 km</span>
+            <span>🏛️ Independent · Co-ed</span>
+            <span>📊 L1R5 COP: 3</span>
+          </div>
+          <div class="school-tags">
+            <span class="tag tag-ip">🎓 IP School</span>
+            <span class="tag tag-sap">🈶 SAP</span>
+            <span class="tag">🏆 Top 3 JC</span>
+          </div>
+        </div>
+
+        <div class="school-card">
+          <div class="school-card-header">
+            <div class="school-name">🎓 National University of Singapore (NUS)</div>
+            <span class="school-level-badge badge-uni">University</span>
+          </div>
+          <div class="school-meta">
+            <span>📍 Kent Ridge · 12 km</span>
+            <span>🏛️ Autonomous University</span>
+            <span>🌍 QS Rank: #8</span>
+          </div>
+          <div class="school-tags">
+            <span class="tag">💼 95.2% Employment</span>
+            <span class="tag">📋 300+ Programmes</span>
+            <span class="tag">🏆 Asia's Top University</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ALL SCHOOLS PAGE ==================== -->
+<div class="page page-schools">
+  <div class="section-header"><h2>📋 All Schools Directory</h2><p>Complete listing of 30 secondary schools sorted by G3 COP score</p></div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>#</th><th>School Name</th><th>Area</th><th>Type</th><th>Gender</th><th>G3 COP</th><th>Programmes</th><th>Safety</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Raffles Institution</strong></td><td>Bishan</td><td>Independent</td><td>Co-ed</td><td>AL 5</td><td><span class="tag tag-ip">IP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>2</td><td><strong>Nanyang Girls' High</strong></td><td>Bukit Timah</td><td>Independent</td><td>Girls</td><td>AL 5</td><td><span class="tag tag-ip">IP</span> <span class="tag tag-sap">SAP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>3</td><td><strong>Hwa Chong Institution</strong></td><td>Bukit Timah</td><td>Independent</td><td>Boys</td><td>AL 6</td><td><span class="tag tag-ip">IP</span> <span class="tag tag-sap">SAP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>4</td><td><strong>CHIJ St Nicholas Girls'</strong></td><td>Ang Mo Kio</td><td>Govt-Aided</td><td>Girls</td><td>AL 6</td><td><span class="tag tag-ip">IP</span> <span class="tag tag-sap">SAP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>5</td><td><strong>Dunman High School</strong></td><td>Kallang</td><td>Govt-Aided</td><td>Co-ed</td><td>AL 7</td><td><span class="tag tag-ip">IP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>6</td><td><strong>Catholic High School</strong></td><td>Bishan</td><td>Govt-Aided</td><td>Boys</td><td>AL 7</td><td><span class="tag tag-ip">IP</span> <span class="tag tag-sap">SAP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>7</td><td><strong>Cedar Girls' Secondary</strong></td><td>Toa Payoh</td><td>Government</td><td>Girls</td><td>AL 8</td><td>—</td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>8</td><td><strong>Victoria School</strong></td><td>Bedok</td><td>Government</td><td>Boys</td><td>AL 9</td><td>—</td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>9</td><td><strong>Maris Stella High</strong></td><td>Toa Payoh</td><td>Govt-Aided</td><td>Boys</td><td>AL 9</td><td><span class="tag tag-sap">SAP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>10</td><td><strong>Chung Cheng High (Main)</strong></td><td>Marine Parade</td><td>Govt-Aided</td><td>Co-ed</td><td>AL 11</td><td><span class="tag tag-sap">SAP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>11</td><td><strong>Bukit Panjang Govt High</strong></td><td>Bukit Panjang</td><td>Government</td><td>Co-ed</td><td>AL 13</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>12</td><td><strong>Ang Mo Kio Secondary</strong></td><td>Ang Mo Kio</td><td>Government</td><td>Co-ed</td><td>AL 14</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>13</td><td><strong>Pei Hwa Secondary</strong></td><td>Novena</td><td>Govt-Aided</td><td>Co-ed</td><td>AL 14</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>14</td><td><strong>Tampines Secondary</strong></td><td>Tampines</td><td>Government</td><td>Co-ed</td><td>AL 15</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>15</td><td><strong>Hougang Secondary</strong></td><td>Hougang</td><td>Government</td><td>Co-ed</td><td>AL 15</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>16</td><td><strong>Clementi Town Secondary</strong></td><td>Clementi</td><td>Government</td><td>Co-ed</td><td>AL 15</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>17</td><td><strong>Compassvale Secondary</strong></td><td>Sengkang</td><td>Government</td><td>Co-ed</td><td>AL 16</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>18</td><td><strong>Queenstown Secondary</strong></td><td>Queenstown</td><td>Government</td><td>Co-ed</td><td>AL 16</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>19</td><td><strong>Edgefield Secondary</strong></td><td>Punggol</td><td>Government</td><td>Co-ed</td><td>AL 17</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>20</td><td><strong>Greendale Secondary</strong></td><td>Punggol</td><td>Government</td><td>Co-ed</td><td>AL 18</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>21</td><td><strong>Bukit View Secondary</strong></td><td>Bukit Batok</td><td>Government</td><td>Co-ed</td><td>AL 19</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-yellow">🟡</span></td></tr>
+        <tr><td>22</td><td><strong>Yishun Town Secondary</strong></td><td>Yishun</td><td>Government</td><td>Co-ed</td><td>AL 19</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-yellow">🟡</span></td></tr>
+        <tr><td>23</td><td><strong>Woodlands Ring Secondary</strong></td><td>Woodlands</td><td>Government</td><td>Co-ed</td><td>AL 20</td><td><span class="tag tag-alp">ALP</span> <span class="tag tag-llp">LLP</span></td><td><span class="safety-badge safety-yellow">🟡</span></td></tr>
+        <tr><td>24</td><td><strong>Pasir Ris Crest Secondary</strong></td><td>Pasir Ris</td><td>Government</td><td>Co-ed</td><td>AL 20</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-yellow">🟡</span></td></tr>
+        <tr><td>25</td><td><strong>Woodgrove Secondary</strong></td><td>Woodlands</td><td>Government</td><td>Co-ed</td><td>AL 20</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-green">🟢</span></td></tr>
+        <tr><td>26</td><td><strong>Jurong West Secondary</strong></td><td>Jurong West</td><td>Government</td><td>Co-ed</td><td>AL 21</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-red">🔴</span></td></tr>
+        <tr><td>27</td><td><strong>Bedok Green Secondary</strong></td><td>Bedok</td><td>Government</td><td>Co-ed</td><td>AL 21</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-yellow">🟡</span></td></tr>
+        <tr><td>28</td><td><strong>Northbrooks Secondary</strong></td><td>Yishun</td><td>Government</td><td>Co-ed</td><td>AL 22</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-yellow">🟡</span></td></tr>
+        <tr><td>29</td><td><strong>Sembawang Secondary</strong></td><td>Sembawang</td><td>Government</td><td>Co-ed</td><td>AL 22</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-red">🔴</span></td></tr>
+        <tr><td>30</td><td><strong>Changkat Changi Secondary</strong></td><td>Tampines</td><td>Government</td><td>Co-ed</td><td>AL 22</td><td><span class="tag tag-alp">ALP</span></td><td><span class="safety-badge safety-yellow">🟡</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== COMPARE PAGE ==================== -->
+<div class="page page-compare">
+  <div class="section-header"><h2>📊 School Comparison</h2><p>Side-by-side comparison across education levels</p></div>
+
+  <div class="compare-tabs">
+    <label for="ct-sec">🏫 Secondary Schools</label>
+    <label for="ct-jc">🎒 Junior Colleges</label>
+    <label for="ct-uni">🎓 Universities</label>
+  </div>
+
+  <!-- Secondary Comparison -->
+  <div class="compare-section compare-sec">
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-head"><h3>Catholic High School</h3><div class="sub">Bishan · Boys</div></div>
+        <div class="compare-row"><span class="compare-label">Type</span><span class="compare-value">Govt-Aided</span></div>
+        <div class="compare-row"><span class="compare-label">G3 COP</span><span class="compare-value" style="color:var(--primary);font-size:18px;">AL 7</span></div>
+        <div class="compare-row"><span class="compare-label">Programmes</span><span class="compare-value">IP, SAP</span></div>
+        <div class="compare-row"><span class="compare-label">Strengths</span><span class="compare-value">STEM, Sports, Arts</span></div>
+        <div class="compare-row"><span class="compare-label">Awards</span><span class="compare-value">3</span></div>
+        <div class="compare-row"><span class="compare-label">Affiliation</span><span class="compare-value">Catholic High (Pri)</span></div>
+        <div class="compare-row"><span class="compare-label">Safety</span><span class="compare-value"><span class="safety-badge safety-green">🟢 GREEN</span></span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-head"><h3>Maris Stella High</h3><div class="sub">Toa Payoh · Boys</div></div>
+        <div class="compare-row"><span class="compare-label">Type</span><span class="compare-value">Govt-Aided</span></div>
+        <div class="compare-row"><span class="compare-label">G3 COP</span><span class="compare-value" style="color:var(--primary);font-size:18px;">AL 9</span></div>
+        <div class="compare-row"><span class="compare-label">Programmes</span><span class="compare-value">SAP</span></div>
+        <div class="compare-row"><span class="compare-label">Strengths</span><span class="compare-value">Sports, Arts</span></div>
+        <div class="compare-row"><span class="compare-label">Awards</span><span class="compare-value">2</span></div>
+        <div class="compare-row"><span class="compare-label">Affiliation</span><span class="compare-value">Maris Stella (Pri)</span></div>
+        <div class="compare-row"><span class="compare-label">Safety</span><span class="compare-value"><span class="safety-badge safety-green">🟢 GREEN</span></span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-head"><h3>CHIJ St Nicholas Girls'</h3><div class="sub">Ang Mo Kio · Girls</div></div>
+        <div class="compare-row"><span class="compare-label">Type</span><span class="compare-value">Govt-Aided</span></div>
+        <div class="compare-row"><span class="compare-label">G3 COP</span><span class="compare-value" style="color:var(--primary);font-size:18px;">AL 6</span></div>
+        <div class="compare-row"><span class="compare-label">Programmes</span><span class="compare-value">IP, SAP</span></div>
+        <div class="compare-row"><span class="compare-label">Strengths</span><span class="compare-value">Arts, Sports, STEM</span></div>
+        <div class="compare-row"><span class="compare-label">Awards</span><span class="compare-value">3</span></div>
+        <div class="compare-row"><span class="compare-label">Affiliation</span><span class="compare-value">CHIJ Primary (TP)</span></div>
+        <div class="compare-row"><span class="compare-label">Safety</span><span class="compare-value"><span class="safety-badge safety-green">🟢 GREEN</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JC Comparison -->
+  <div class="compare-section compare-jc">
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-head" style="background:linear-gradient(135deg,#6d28d9,#7c3aed);"><h3>Hwa Chong Institution</h3><div class="sub">Bukit Timah · Co-ed</div></div>
+        <div class="compare-row"><span class="compare-label">Type</span><span class="compare-value">Independent</span></div>
+        <div class="compare-row"><span class="compare-label">L1R5 COP</span><span class="compare-value" style="color:var(--primary);font-size:18px;">3</span></div>
+        <div class="compare-row"><span class="compare-label">Programmes</span><span class="compare-value">IP, SAP, H3</span></div>
+        <div class="compare-row"><span class="compare-label">Uni Placement</span><span class="compare-value">98%</span></div>
+        <div class="compare-row"><span class="compare-label">Scholarships</span><span class="compare-value">MOE, PSC, A*STAR</span></div>
+        <div class="compare-row"><span class="compare-label">Safety</span><span class="compare-value"><span class="safety-badge safety-green">🟢 GREEN</span></span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-head" style="background:linear-gradient(135deg,#6d28d9,#7c3aed);"><h3>Raffles Institution (JC)</h3><div class="sub">Bishan · Co-ed</div></div>
+        <div class="compare-row"><span class="compare-label">Type</span><span class="compare-value">Independent</span></div>
+        <div class="compare-row"><span class="compare-label">L1R5 COP</span><span class="compare-value" style="color:var(--primary);font-size:18px;">3</span></div>
+        <div class="compare-row"><span class="compare-label">Programmes</span><span class="compare-value">IP, H3</span></div>
+        <div class="compare-row"><span class="compare-label">Uni Placement</span><span class="compare-value">99%</span></div>
+        <div class="compare-row"><span class="compare-label">Scholarships</span><span class="compare-value">MOE, PSC, SAF</span></div>
+        <div class="compare-row"><span class="compare-label">Safety</span><span class="compare-value"><span class="safety-badge safety-green">🟢 GREEN</span></span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-head" style="background:linear-gradient(135deg,#6d28d9,#7c3aed);"><h3>Victoria JC</h3><div class="sub">Marine Parade · Co-ed</div></div>
+        <div class="compare-row"><span class="compare-label">Type</span><span class="compare-value">Government</span></div>
+        <div class="compare-row"><span class="compare-label">L1R5 COP</span><span class="compare-value" style="color:var(--primary);font-size:18px;">6</span></div>
+        <div class="compare-row"><span class="compare-label">Programmes</span><span class="compare-value">H3, Talent Dev</span></div>
+        <div class="compare-row"><span class="compare-label">Uni Placement</span><span class="compare-value">95%</span></div>
+        <div class="compare-row"><span class="compare-label">Scholarships</span><span class="compare-value">MOE, A*STAR</span></div>
+        <div class="compare-row"><span class="compare-label">Safety</span><span class="compare-value"><span class="safety-badge safety-green">🟢 GREEN</span></span></div>
+      </div>
+    </div>
+  </div>
